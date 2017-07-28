@@ -1,0 +1,9 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="col-md-12">
+{% for i in items %}
+<a href="/catalog/{{catalog.name}}/{{i.name}}">{{i.name}}</a>
+</div>
+{%endfor%}
+{%endblock%}
+

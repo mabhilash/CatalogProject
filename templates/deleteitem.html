@@ -1,0 +1,10 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div>
+	<p>Please confirm to delete the item. Click submit</p>
+	<form method="post" action="{{url_for('deleteCatalogItem', itemname = itemname)}}">
+		<input type="submit" name="submit">
+	</form>
+</div>
+{%endblock%}

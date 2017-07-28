@@ -1,0 +1,15 @@
+{% extends "main.html" %}
+{% block content %}
+
+{{catalogname}}
+{% for item in itemDesc%}
+<div class="col-md-12">
+	{{item.description}}
+</div>
+
+<div class="col-md-12">
+	<a href="{{url_for('editCatalogItem',itemname=item.name)}}">Edit</a>
+	<a href="{{url_for('deleteCatalogItem',itemname=item.name)}}">Delete</a>
+</div>
+{%endfor%}
+{%endblock%}
