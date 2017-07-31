@@ -1,8 +1,16 @@
 {% extends "main.html" %}
 {% block content %}
-<div class="row">
-	<div class="col-md-12">
-		<h2>Catalog projects</h2>
+<div class="col-md-12">
+	<div class="row">
+		<h2>Catalog Project</h2>
+	</div>
+</div>
+<div class="col-md-12 text-center catalog-section">
+	<div class="row">
+		{% if session.get('username') != None %}
+		<a href="{{url_for('addCatalog')}}">AddCatalog</a>  |
+		<a href="#">DeleteCatalog</a>
+		{%endif%}
 	</div>
 </div>
 <div class="col-md-12 homepage-body">
@@ -15,6 +23,9 @@
 		{%endfor%}
 	</div>
 	<div class="col-md-6">
+<!-- 		{% if session.get('username') != None %}
+	<a href="{{url_for('addCatalog')}}">AddCatalog</a>
+	{%endif%} -->
 		<h3>Latest Items</h3>
 		{% for i in items %}
 		<div class="catalog-items">

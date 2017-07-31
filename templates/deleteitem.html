@@ -1,10 +1,13 @@
 {% extends "main.html" %}
 {% block content %}
 
-<div>
-	<p>Please confirm to delete the item. Click submit</p>
+<div class="col-md-12">
+<div class="row">
+	<label>Please confirm to delete the item. Click Submit or Cancel to return to previous page</label>
 	<form method="post" action="{{url_for('deleteCatalogItem', itemname = itemname)}}">
-		<input type="submit" name="submit">
+		<input type="submit" class="btn btn-danger" name="submit">
+		<input type="submit" value="Cancel" class="btn btn-primary" name="cancel">
 	</form>
+</div>
 </div>
 {%endblock%}

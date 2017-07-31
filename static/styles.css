@@ -1,8 +1,38 @@
 h2{
 	text-align: center;
-	color: red;
+	color: green;
 }
 .homepage-body{
 	text-align: center;
 	color: green;
+}
+.login-link{
+	font-size: 15px;
+}
+
+.header-links{
+	text-align: center;
+	color: red;
+}
+
+.login-section{
+	color: green;
+
+}
+
+.addCatalog{
+	color: red;
+}
+
+h4{
+	color: blue;
+	text-align: center;
+}
+
+.footer{
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	text-align: right;
 }

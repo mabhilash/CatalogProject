@@ -5,6 +5,11 @@ from sqlalchemy import create_engine
  
 Base = declarative_base()
 
+# class User(Base):
+# 	id = Column(Integer, primary_key=True)
+# 	username = Column(String, nullable=False)
+# 	email = Column(String, nullable=False)
+
 class Catalog(Base):
 	__tablename__ = 'catalog'
 
@@ -32,7 +37,7 @@ class CatalogItems(Base):
 	def serialize(self):
 		return{
 		'id':self.id,
-		'name':self.name,
+		'itemname':self.itemname,
 		'description':self.description,
 		}
 
