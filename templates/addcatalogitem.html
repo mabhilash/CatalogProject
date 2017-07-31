@@ -3,6 +3,18 @@
 <div class="col-md-12">
 	<h2>Add Catalog Item</h2>
 </div>
+<div class="col-md-12">
+	<div class="row text-center">
+		{% with messages = get_flashed_messages() %}
+		{% if messages %}
+		{% for message in messages %}
+		<p class="message">{{message}}</p>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}
+	</div>
+</div>
+
 <div class="col-md-12">	
 	<form method="post" action="{{url_for('addCatalogItem',catalog=catalog)}}">
 			<div class="row form-group">

@@ -16,7 +16,7 @@
 				{% if session.get('username') == None %}
 				<a href="{{url_for('login')}}" class="pull-right">Login</a>
 				{%else%}
-				<h5 class="pull-right">Welcome {{session.get('username')}}(<a href="{{url_for('logout')}}">Logout</a>)</h5><br>
+				<h5 class="pull-right">Welcome {{session.get('username')}}(<a class="logout" href="{{url_for('logout')}}">Logout</a>)</h5><br>
 				{%endif%}
 			</div>
 			<div class="col-md-12">

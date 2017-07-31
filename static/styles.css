@@ -9,6 +9,13 @@ h2{
 .login-link{
 	font-size: 15px;
 }
+.log{
+	color: green;
+}
+
+.logout{
+	color: red;
+}
 
 .header-links{
 	text-align: center;
@@ -26,7 +33,6 @@ h2{
 
 h4{
 	color: blue;
-	text-align: center;
 }
 
 .footer{

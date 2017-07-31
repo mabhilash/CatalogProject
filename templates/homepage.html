@@ -1,31 +1,39 @@
 {% extends "main.html" %}
 {% block content %}
+
 <div class="col-md-12">
 	<div class="row">
 		<h2>Catalog Project</h2>
 	</div>
 </div>
+<div class="col-md-12">
+	<div class="row text-center">
+		{% with messages = get_flashed_messages() %}
+		{% if messages %}
+		{% for message in messages %}
+		<p>{{message}}</p>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}
+	</div>
+</div>
 <div class="col-md-12 text-center catalog-section">
 	<div class="row">
 		{% if session.get('username') != None %}
-		<a href="{{url_for('addCatalog')}}">AddCatalog</a>  |
-		<a href="#">DeleteCatalog</a>
+		<a href="{{url_for('addCatalog')}}">AddCatalog</a>
 		{%endif%}
 	</div>
 </div>
 <div class="col-md-12 homepage-body">
 	<div class="col-md-6">
-		<h3>Catalog</h3>
+		<h3>Catalog List</h3>
 		{% for c in catalog %}
 		<div class="catalog-data">
-			<a href="catalog/{{c.name}}/items">{{c.name}}</a>
+			<a href="catalog/{{c.name}}/items">{{c.name.upper()}}</a>
 		</div>
 		{%endfor%}
 	</div>
 	<div class="col-md-6">
-<!-- 		{% if session.get('username') != None %}
-	<a href="{{url_for('addCatalog')}}">AddCatalog</a>
-	{%endif%} -->
 		<h3>Latest Items</h3>
 		{% for i in items %}
 		<div class="catalog-items">
@@ -34,4 +42,5 @@
 		{%endfor%}
 	</div>
 </div>
+
 {%endblock%}
