@@ -1,5 +1,5 @@
-# OAuth2.0
-Starter Code for Auth&amp;Auth course
+# CATALOG PROJECT
+FullStack Catalog project-CRUD operations
 # Installing the Vagrant VM for ud330 - Authentication & Authorization
 
 We're using the Vagrant software to configure and manage the VM. Here are the tools you'll need to install to get it running:
