@@ -23,9 +23,9 @@ Vagrant is the software that configures the VM and lets you share files between 
 **Windows:** Use the Git Bash program (installed with Git) to get a Unix-style terminal.  
 **Other systems:** Use your favorite terminal program.
 
-From the terminal, run:
+From the terminal, run to download the project to local:
 
-    git clone https://github.com/udacity/OAuth2.0 oauth
+    git clone https://github.com/mabhilash/CatalogProject.git
 
 
 ## Run the virtual machine!
