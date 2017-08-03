@@ -1,0 +1,12 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div class="col-md-12">
+<div class="row">
+	<label>Please confirm to delete the Catalog. Click Submit.</label>
+	<form method="post" action="{{url_for('deleteCatalog', catalogname = catalogname)}}">
+		<input type="submit" class="btn btn-danger" name="submit">
+	</form>
+</div>
+</div>
+{%endblock%}

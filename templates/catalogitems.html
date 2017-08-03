@@ -6,6 +6,7 @@
 	<div class="row">
 		{% if session.get('username') != None %}
 		<h4><a class="pull-right btn btn-primary" href="{{url_for('addCatalogItem',catalog=catalog.name)}}">AddCatalogItem</a></h4>
+		<h4><a class="pull-right btn btn-danger" href="{{url_for('deleteCatalog',catalogname=catalog.name)}}">DeleteCatalog</a></h4>
 		{%endif%}
 	</div>
 </div>

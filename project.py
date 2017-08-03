@@ -1,3 +1,6 @@
+# Catalog Project- Project to display all catalogs and their particular items
+# Developed by Abhilash M
+
 from flask import Flask, render_template, request, redirect
 from flask import jsonify, url_for, flash
 from sqlalchemy import create_engine, asc, desc
@@ -11,13 +14,22 @@ from oauth2client.client import FlowExchangeError
 import httplib2
 import json
 from flask import make_response
+from functools import wraps
 import requests
+import os
+import json
+import urllib2
+import dicttoxml
+from werkzeug import secure_filename
+from helpers import getUserID, createUser
 
-app = Flask(__name__)
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+app = Flask(__name__, static_folder="images")
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 CLIENT_ID = json.loads(
     open('client_secret.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Catalog Application"
-
 
 engine = create_engine('sqlite:///catalogdata.db')
 Base.metadata.bind = engine
@@ -25,27 +37,28 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-# Check if user exists
-def getUserID(email):
-    try:
-        user = session.query(User).filter_by(email=email).one()
-        return user.id
-    except:
-        return None
+# login decorator where 'f'= func that login_required is used as decorator.
+def login_required(f):
+    @wraps(f)
+    def decorator_func(*args, **kwargs):
+        print 'login decorator fun'
+        if 'username' in login_session:
+            return f(*args, **kwargs)
+        else:
+            print 'else'
+            flash("You need to login")
+            return redirect(url_for("login"))
+    return decorator_func
 
 
-# Creates a new user
-def createUser(login_session):
-    user = User(username=login_session['username'],
-                email=login_session['email'], picture=login_session['picture'])
-    session.add(user)
-    session.commit()
-    usrinfo = session.query(User).filter_by(email=login_session['email']).one()
-    return usrinfo.id
+# Check if the file uploaded is of allowed extension.
+def allowed_file(filename):
+    return '.' in filename and \
+            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
 # REST API call for list of catalogs
-@app.route('/catalog.json')
+@app.route('/catalog/json')
 def showCatalogJSONFile():
     categories = session.query(Catalog).all()
     return jsonify(categories=[c.serialize for c in categories])
@@ -58,8 +71,25 @@ def showItemsJSONFile(catalogid):
     return jsonify(items=[item.serialize for item in items])
 
 
+# XML Endpoint implementation
+@app.route('/catalog/catalog.xml')
+def showCatalogXMLFile():
+    print 'showxml'
+    page = urllib2.urlopen("http://localhost:5000/catalog/")
+    print 'page'
+    print page
+    content = page.read()
+    print content
+    obj = json.loads(content)
+    xmldata = dicttoxml.dicttoxml(obj)
+    print xmldata
+    return xmldata
+
+
+# Login functionality renders login template
 @app.route('/login')
 def login():
+    # Creating a unique session token to prevent anti-forgery attack.
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in range(32))
     login_session['state'] = state
@@ -138,8 +168,11 @@ def gconnect():
     return output
 
 
+# Logout of the application
 @app.route('/logout')
+@login_required
 def logout():
+    # Checks if the logged in session is facebook or google.
     if login_session['provider'] == 'facebook':
         fbdisconnect()
         del login_session['facebook_id']
@@ -263,7 +296,7 @@ def showHomePage():
 
 
 # List of catalog items for a catalog
-@app.route('/catalog/<string:catalogname>/items')
+@app.route('/catalog/<path:catalogname>/items')
 def getCatalogItems(catalogname):
     catalogList = session.query(Catalog).all()
     catalog = session.query(Catalog).filter_by(name=catalogname).one()
@@ -273,7 +306,7 @@ def getCatalogItems(catalogname):
 
 
 # Catalog item description
-@app.route('/catalog/<string:catalogname>/<string:itemname>')
+@app.route('/catalog/<path:catalogname>/<path:itemname>')
 def getCatalogDesc(itemname, catalogname):
     item = session.query(CatalogItems).filter_by(itemname=itemname).first()
     return render_template('itemdescription.html', item=item,
@@ -281,7 +314,8 @@ def getCatalogDesc(itemname, catalogname):
 
 
 # Edit a catalog item
-@app.route('/catalog/<string:itemname>/edit', methods=['GET', 'POST'])
+@app.route('/catalog/<path:itemname>/edit', methods=['GET', 'POST'])
+@login_required
 def editCatalogItem(itemname):
     editItems = session.query(CatalogItems).filter_by(itemname=itemname).one()
     catalogList = session.query(Catalog).order_by(asc(Catalog.name))
@@ -299,7 +333,8 @@ def editCatalogItem(itemname):
 
 
 # Ddelete a catalog item
-@app.route('/catalog/<string:itemname>/delete', methods=['GET', 'POST'])
+@app.route('/catalog/<path:itemname>/delete', methods=['GET', 'POST'])
+@login_required
 def deleteCatalogItem(itemname):
     if request.method == 'GET':
         return render_template('deleteitem.html', itemname=itemname)
@@ -314,6 +349,7 @@ def deleteCatalogItem(itemname):
 
 # Add a catalog
 @app.route('/addCatalog', methods=['GET', 'POST'])
+@login_required
 def addCatalog():
     if request.method == 'GET':
         return render_template('addcatalog.html')
@@ -321,32 +357,71 @@ def addCatalog():
         if not request.form['catalogname']:
             flash('Please add catalog name')
             return redirect(url_for('addCatalog'))
-        catalog = Catalog(name=request.form['catalogname'])
-        session.add(catalog)
-        session.commit()
-        flash("Catalog has been added")
-        return redirect(url_for('showHomePage'))
+        catalogExists = session.query(Catalog).filter_by(
+                        name=request.form['catalogname']).first()
+        if catalogExists is not None:
+            flash('Catalog already exists')
+            return redirect(url_for('addCatalog'))
+        else:
+            catalog = Catalog(name=request.form['catalogname'])
+            session.add(catalog)
+            session.commit()
+            flash("Catalog has been added")
+            return redirect(url_for('showHomePage'))
 
 
 # Add a catalog item
-@app.route('/<string:catalog>/addCatalogItem', methods=['GET', 'POST'])
+@app.route('/<path:catalog>/addCatalogItem', methods=['GET', 'POST'])
+@login_required
 def addCatalogItem(catalog):
     if request.method == 'GET':
         return render_template('addcatalogitem.html', catalog=catalog)
     else:
+        image = request.files['picture']
         if not request.form['itemname']:
             flash('Please add itemname')
             return redirect(url_for('addCatalogItem', catalog=catalog))
         if not request.form['description']:
             flash('Please add description')
             return redirect(url_for('addCatalogItem', catalog=catalog))
+        itemExists = session.query(CatalogItems).filter_by(
+                    itemname=request.form['itemname']).first()
+        if itemExists is not None:
+            flash('Item already exists')
+            return redirect(url_for('addCatalogItem', catalog=catalog))
+        if image and allowed_file(image.filename):
+            # Creates a directory if not present and places the file.
+            target = os.path.join(APP_ROOT, 'images/')
+            if not os.path.isdir(target):
+                os.mkdir(target)
+            else:
+                print 'Could not create directory'
+            filename = secure_filename(image.filename)
+            destination = "/".join([target, filename])
+            image.save(destination)
         catalogid = session.query(Catalog).filter_by(
                     name=request.form['catalogname']).first()
         catalogitems = CatalogItems(itemname=request.form['itemname'],
                                     description=request.form['description'],
-                                    catalog_id=catalogid.id)
+                                    catalog_id=catalogid.id,
+                                    picturename=filename)
         session.add(catalogitems)
         session.commit()
+        return redirect(url_for('showHomePage'))
+
+
+# DeleteCatalog functionality.
+@app.route('/deleteCatalog/<path:catalogname>', methods=['GET', 'POST'])
+@login_required
+def deleteCatalog(catalogname):
+    if request.method == 'GET':
+        return render_template('deletecatalog.html', catalogname=catalogname)
+    else:
+        catalogDelete = session.query(Catalog).filter_by(
+                        name=catalogname).first()
+        session.delete(catalogDelete)
+        session.commit()
+        flash('Catalog has been deleted')
         return redirect(url_for('showHomePage'))
 
 

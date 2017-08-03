@@ -16,7 +16,7 @@
 </div>
 
 <div class="col-md-12">	
-	<form method="post" action="{{url_for('addCatalogItem',catalog=catalog)}}">
+	<form method="post" enctype="multipart/form-data" action="{{url_for('addCatalogItem',catalog=catalog)}}">
 			<div class="row form-group">
 				<label>Catalog name</label>
 				<input type="text" class="col-sm-10 form-control" name="catalogname" value={{catalog}}>	
@@ -28,6 +28,10 @@
 			<div class="row form-group">
 				<label>Item description</label>
 				<input type="textarea" class="col-sm-10 form-control"  name="description">
+			</div>
+			<div class="row form-group">
+				<label>Image</label>
+				<input type="file" name="picture" id="picture">
 			</div>
 			<div class="row">
 				<input type="submit" class="btn btn-primary" name="submit" value="submit">

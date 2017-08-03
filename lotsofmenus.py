@@ -18,45 +18,17 @@ DBSession = sessionmaker(bind=engine)
 # session.rollback()
 session = DBSession()
 
-#Catalog
-
-user1 = User(username="Abhilash", email="chinni.muthineni@gmail.com", picture="http://www.gettyimages.com/gi-resources/images/Embed/new/embed2.jpg")
-session.add(user1)
-session.commit()
-
-c1 = Catalog(name="Soccer", user=user1)
-
+c1 = Catalog(name="Soccer")
 session.add(c1)
 session.commit()
 
-item1 = CatalogItems(itemname = "Chelsea", description = "Best club in EPL", catalog = c1, user=user1)
-
-session.add(item1)
-session.commit()
-
-item2 = CatalogItems(itemname = "RealMadrid", description = "Best club in LaLiga", catalog = c1, user=user1)
-
-session.add(item2)
-session.commit()
-
-
-
-c2 = Catalog(name="Cricket", user=user1)
-
+c2 = Catalog(name="Football")
 session.add(c2)
 session.commit()
 
-item1 = CatalogItems(itemname = "India", description = "Best team in world", catalog = c2, user=user1)
 
-session.add(item1)
+c3 = Catalog(name="NBA")
+session.add(c3)
 session.commit()
-
-
-item2 = CatalogItems(itemname = "SouthAfrica", description = "Strong team in world", catalog = c2, user=user1)
-
-session.add(item2)
-session.commit()
-
-
 print "added catalog items!"
 
