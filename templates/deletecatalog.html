@@ -6,6 +6,7 @@
 	<label>Please confirm to delete the Catalog. Click Submit.</label>
 	<form method="post" action="{{url_for('deleteCatalog', catalogname = catalogname)}}">
 		<input type="submit" class="btn btn-danger" name="submit">
+		<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
 	</form>
 </div>
 </div>
