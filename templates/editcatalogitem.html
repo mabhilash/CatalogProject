@@ -24,6 +24,7 @@
 						<option value={{i.name}}>{{i.name}}</option>
 					{% endfor %}
 				</select>
+				<div><input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"></div>
 			</div><br><br>
 			<div class="row">
 				<input type="submit" class="btn btn-primary" name="submit" value="submit">
@@ -31,30 +32,4 @@
 		</form>
 	</div>
 </div>
-
-
-<!-- 
-<div class="row">
-<form method="post" action="{{url_for('editCatalogItem',itemname=itemname)}}">
-<div class="row">
-<p>Title</p>
-<input type="text" name="title" value="{{itemname}}">
-</div>
-<div class="row">
-<p>Description</p>
-<input type="text" name="description" value="{{editCatalog.description}}">
-</div>
-<div class="row">
-<p>Category</p>
-
-<select name="category">
-{% for i in catalogList %}
-	<option value={{i.name}}>{{i.name}}</option>
-{% endfor %}
-</select>
-</div>
-<input type="submit" name="submit" value="submit">	
-</form>
-	
-</div> -->
 {%endblock%}

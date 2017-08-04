@@ -8,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from catalogdb_setup import Base, Catalog, CatalogItems, User
 from flask import session as login_session
 import random
+from flask import Response
 import string
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -20,12 +21,15 @@ import os
 import json
 import urllib2
 import dicttoxml
+from flask.ext.seasurf import SeaSurf
 from werkzeug import secure_filename
 from helpers import getUserID, createUser
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 app = Flask(__name__, static_folder="images")
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+csrf = SeaSurf(app)
 
 CLIENT_ID = json.loads(
     open('client_secret.json', 'r').read())['web']['client_id']
@@ -41,11 +45,9 @@ session = DBSession()
 def login_required(f):
     @wraps(f)
     def decorator_func(*args, **kwargs):
-        print 'login decorator fun'
         if 'username' in login_session:
             return f(*args, **kwargs)
         else:
-            print 'else'
             flash("You need to login")
             return redirect(url_for("login"))
     return decorator_func
@@ -71,19 +73,10 @@ def showItemsJSONFile(catalogid):
     return jsonify(items=[item.serialize for item in items])
 
 
-# XML Endpoint implementation
 @app.route('/catalog/catalog.xml')
-def showCatalogXMLFile():
-    print 'showxml'
-    page = urllib2.urlopen("http://localhost:5000/catalog/")
-    print 'page'
-    print page
-    content = page.read()
-    print content
-    obj = json.loads(content)
-    xmldata = dicttoxml.dicttoxml(obj)
-    print xmldata
-    return xmldata
+def showXML():
+    categories = session.query(Catalog).all()
+    return dicttoxml.dicttoxml([c.serialize for c in categories])
 
 
 # Login functionality renders login template
@@ -97,6 +90,7 @@ def login():
 
 
 # Login through gmail account
+@csrf.exempt
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     if request.args.get('state') != login_session['state']:
@@ -212,6 +206,7 @@ def gdisconnect():
 
 
 # Login through facebook
+@csrf.exempt
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
     if request.args.get('state') != login_session['state']:

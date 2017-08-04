@@ -24,6 +24,7 @@
 		</div>
 		<div>
 			<input type="submit" name="submit" class="btn btn-primary">
+		    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
 		</div>
 	</form>
 </div>
